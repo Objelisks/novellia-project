@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
+import type { Pet } from './types/types.d.ts'
 
 function App() {
-  const [pets, setPets] = useState([])
+  const [pets, setPets] = useState<Pet[]>([])
 
   useEffect(() => {
     fetch('http://localhost:3000/pets')

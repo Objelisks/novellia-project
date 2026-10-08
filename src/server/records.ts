@@ -3,29 +3,32 @@ import { Record } from './schema.ts'
 
 const recordsRouter = Router()
 
-recordsRouter.get('/records', async (req, res) => {
-    const pets = await Record.findAll()
-    res.send(JSON.stringify(pets))
+recordsRouter.get('/records', async (_req, res) => {
+    const records = await Record.findAll()
+    res.send(JSON.stringify(records))
 })
 
 recordsRouter.get('/records/:id', async (req, res) => {
     const id = req.params['id']
-    const pets = await Record.findOne({ where: { id } })
-    res.send(JSON.stringify(pets))
+    const records = await Record.findOne({ where: { id } })
+    res.send(JSON.stringify(records))
 })
 
 recordsRouter.post('/records', async (req, res) => {
-    const pet = await Record.create(req.body, { fields: Record.safeFields })
-    res.send(JSON.stringify(pet))
+    const record = await Record.create(req.body, { fields: Record.safeFields })
+    res.send(JSON.stringify(record))
 })
 
 recordsRouter.patch('/records/:id', async (req, res) => {
     const id = req.params['id']
-    const pet = await Record.findOne({ where: { id } })
-    pet.set({
+    const record = await Record.findOne({ where: { id } })
+    if(!record) {
+        return res.send(JSON.stringify(false))
+    }
+    record.set({
         ...req.body
     })
-    const updated = await pet.save({ fields: Record.safeFields })
+    const updated = await record.save({ fields: Record.safeFields })
     res.send(JSON.stringify(updated))
 })
 

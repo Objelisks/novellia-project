@@ -2,7 +2,7 @@ import { Pet, Record } from './schema.ts'
 
 const names = ["Luna","Milo","Leo","Lily","Coco","Loki","Simba","Bella","Ollie","Charlie","Willow","Cleo","Daisy","Pepper","Rosie","Oreo","Archie","Lucy","Penny","Nova"]
 const genders = ['the wind', 'male', 'female', 'nonbinary', 'a rock', 'a tree', 'purple']
-const pick = (arr) => arr.at(Math.floor(Math.random()*arr.length))
+const pick = <T>(arr: T[]) => arr.at(Math.floor(Math.random()*arr.length))
 
 export const createSeedData = async () => {
     const pets = []

@@ -1,7 +1,9 @@
 import { DataTypes, Model } from 'sequelize'
 import { sql } from "./db.ts"
 
-export class Pet extends Model {
+import type { Pet as PetType, Record as RecordType } from '../types/types.d.ts'
+
+export class Pet extends Model implements PetType {
     static safeFields = ['name', 'birthdate', 'gender']
     declare id: number
     declare name: string
@@ -26,7 +28,7 @@ Pet.init({
     modelName: 'Pet'
 })
 
-export class Record extends Model {
+export class Record extends Model implements RecordType {
     static safeFields = ['filename', 'data', 'url']
     declare id: number
     declare petId: number

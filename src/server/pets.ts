@@ -3,7 +3,7 @@ import { Pet, Record } from './schema.ts'
 
 const petsRouter = Router()
 
-petsRouter.get('/pets', async (req, res) => {
+petsRouter.get('/pets', async (_req, res) => {
     const pets = await Pet.findAll({ include: [Record] })
     res.send(JSON.stringify(pets))
 })
@@ -22,6 +22,9 @@ petsRouter.post('/pets', async (req, res) => {
 petsRouter.patch('/pets/:id', async (req, res) => {
     const id = req.params['id']
     const pet = await Pet.findOne({ where: { id } })
+    if(!pet) {
+        return res.send(JSON.stringify([]))
+    }
     pet.set({
         ...req.body
     })

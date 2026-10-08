@@ -47,3 +47,4 @@ weds
 5:37pm start
 5:58 pause
 7:16 start
+8:49 pause - git init
