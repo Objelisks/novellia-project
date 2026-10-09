@@ -7,10 +7,6 @@
 
 go to http://localhost:5173
 
-## stack
-
-vite frontend tooling
-
 ## Project: Novellia Pets
 
 Novellia Pets is a new service where pet owners can track and manage their pet's medical
