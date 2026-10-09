@@ -9,8 +9,10 @@ import './App.css'
 function PetPage() {
   let { petId } = useParams()
   const [pet, setPet] = useState<Pet>(null)
+  const [editRecord, setEditRecord] = useState<RecordType>(null)
   const [records, setRecords] = useState<RecordType[]>([])
-  const dialogRef = useRef(null)
+  const addDialogRef = useRef(null)
+  const editDialogRef = useRef(null)
 
   const fetchPet = useCallback(async () => {
     const pet = await fetch(`http://localhost:3000/pets/${petId}`).then((res) =>
@@ -39,7 +41,7 @@ function PetPage() {
   }, [])
 
   const handleAddRecord = useCallback(() => {
-    dialogRef.current.showModal()
+    addDialogRef.current.showModal()
   }, [])
 
   const handleAddSubmit = useCallback(
@@ -62,9 +64,42 @@ function PetPage() {
       ).then((res) => res.json())
 
       setRecords([...records, response])
-      dialogRef.current?.close()
+      addDialogRef.current?.close()
     },
     [records]
+  )
+
+  const handleEditRecord = useCallback(async (record: RecordType) => {
+    editDialogRef.current.showModal()
+    setEditRecord(record)
+    editDialogRef.current.querySelector('#edit-filename').value =
+      record.filename
+    editDialogRef.current.querySelector('#edit-data').value = record.data
+  }, [])
+
+  const handleEditSubmit = useCallback(
+    async (formData: FormData) => {
+      const response: RecordType = await fetch(
+        `http://localhost:3000/records/${editRecord.id}`,
+        {
+          method: 'post',
+          body: JSON.stringify({
+            filename: formData.get('filename'),
+            data: formData.get('data'),
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      ).then((res) => res.json())
+
+      const newRecords = [...records]
+      newRecords.splice(newRecords.indexOf(editRecord), 1, response)
+      setRecords(newRecords)
+      setEditRecord(null)
+      editDialogRef.current?.close()
+    },
+    [records, editRecord]
   )
 
   const handleRemoveRecord = useCallback(
@@ -98,13 +133,23 @@ function PetPage() {
       </header>
       {pet && (
         <>
-          <dialog ref={dialogRef} closedby="any">
+          <dialog ref={addDialogRef} closedby="any">
             <h2>Add a record</h2>
             <form className="form" action={handleAddSubmit}>
               <label htmlFor="filename">filename</label>
               <input type="text" name="filename" id="filename" required />
               <label htmlFor="data">data</label>
               <input type="text" name="data" id="data" required />
+              <input type="submit" />
+            </form>
+          </dialog>
+          <dialog ref={editDialogRef} closedby="any">
+            <h2>Edit a record</h2>
+            <form className="form" action={handleEditSubmit}>
+              <label htmlFor="edit-filename">filename</label>
+              <input type="text" name="filename" id="edit-filename" required />
+              <label htmlFor="edit-data">data</label>
+              <input type="text" name="data" id="edit-data" required />
               <input type="submit" />
             </form>
           </dialog>
@@ -123,6 +168,7 @@ function PetPage() {
               <Record
                 key={record.id}
                 record={record}
+                handleEditRecord={handleEditRecord}
                 handleRemoveRecord={handleRemoveRecord}
               />
             ))}

@@ -26,7 +26,7 @@ petsRouter.post('/pets', async (req, res) => {
   res.send(JSON.stringify(pet))
 })
 
-petsRouter.patch('/pets/:id', async (req, res) => {
+petsRouter.post('/pets/:id', async (req, res) => {
   const id = req.params['id']
   const pet = await Pet.findOne({ where: { id } })
   if (!pet) {

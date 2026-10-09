@@ -6,7 +6,9 @@ import './App.css'
 
 function PetsPage() {
   const [pets, setPets] = useState<PetType[]>([])
-  const dialogRef = useRef(null)
+  const [editPet, setEditPet] = useState<PetType>(null)
+  const addDialogRef = useRef(null)
+  const editDialogRef = useRef(null)
 
   const searchPets = useCallback(
     debounce((searchTerm?: string) => {
@@ -30,7 +32,7 @@ function PetsPage() {
   }, [])
 
   const handleAddPet = useCallback(() => {
-    dialogRef.current.showModal()
+    addDialogRef.current.showModal()
   }, [])
 
   const handleAddSubmit = useCallback(
@@ -49,9 +51,49 @@ function PetsPage() {
       }).then((res) => res.json())
 
       setPets([...pets, response])
-      dialogRef.current?.close()
+      addDialogRef.current?.close()
     },
     [pets]
+  )
+
+  const handleEditPet = useCallback(async (pet: PetType) => {
+    editDialogRef.current.showModal()
+    console.log(pet)
+    setEditPet(pet)
+    editDialogRef.current.querySelector('#edit-name').value = pet.name
+    editDialogRef.current.querySelector('#edit-birthdate').value = new Date(
+      pet.birthdate
+    )
+      .toISOString()
+      .split('T')[0]
+    editDialogRef.current.querySelector('#edit-gender').value = pet.gender
+  }, [])
+
+  const handleEditSubmit = useCallback(
+    async (formData: FormData) => {
+      const response: PetType = await fetch(
+        `http://localhost:3000/pets/${editPet.id}`,
+        {
+          method: 'post',
+          body: JSON.stringify({
+            name: formData.get('name'),
+            birthdate: formData.get('birthdate'),
+            gender: formData.get('gender'),
+            imageUrl: formData.get('imageUrl')['name'],
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      ).then((res) => res.json())
+
+      const newPets = [...pets]
+      newPets.splice(newPets.indexOf(editPet), 1, response)
+      setPets(newPets)
+      setEditPet(null)
+      editDialogRef.current?.close()
+    },
+    [pets, editPet]
   )
 
   const handleRemovePet = useCallback(
@@ -79,7 +121,7 @@ function PetsPage() {
           add pet
         </button>
       </header>
-      <dialog ref={dialogRef} closedby="any">
+      <dialog ref={addDialogRef} closedby="any">
         <h2>Add a pet</h2>
         <form className="form" action={handleAddSubmit}>
           <label htmlFor="name">name</label>
@@ -93,8 +135,29 @@ function PetsPage() {
           <input type="submit" />
         </form>
       </dialog>
+      <dialog ref={editDialogRef} closedby="any">
+        <h2>Edit a pet</h2>
+        <form className="form" action={handleEditSubmit}>
+          <label htmlFor="edit-name">name</label>
+          <input type="text" name="name" id="edit-name" required />
+          <label htmlFor="edit-birthdate">birthdate</label>
+          <input type="date" name="birthdate" id="edit-birthdate" required />
+          <label htmlFor="edit-gender">gender</label>
+          <input type="text" name="gender" id="edit-gender" />
+          <label htmlFor="edit-imageUrl">picture</label>
+          <input type="file" name="imageUrl" id="edit-imageUrl" />
+          <input type="submit" />
+        </form>
+      </dialog>
       {pets.map((pet) => {
-        return <Pet key={pet.id} pet={pet} handleRemovePet={handleRemovePet} />
+        return (
+          <Pet
+            key={pet.id}
+            pet={pet}
+            handleRemovePet={handleRemovePet}
+            handleEditPet={handleEditPet}
+          />
+        )
       })}
     </main>
   )

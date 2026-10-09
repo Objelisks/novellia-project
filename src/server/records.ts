@@ -36,7 +36,7 @@ recordsRouter.post('/records', async (req, res) => {
   res.send(JSON.stringify(record))
 })
 
-recordsRouter.patch('/records/:id', async (req, res) => {
+recordsRouter.post('/records/:id', async (req, res) => {
   const id = req.params['id']
   const record = await Record.findOne({ where: { id } })
   if (!record) {
