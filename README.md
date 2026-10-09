@@ -2,7 +2,10 @@
 
 ## to run
 
+`npm i`
+
 `npm run server`
+
 `npm run dev`
 
 go to http://localhost:5173
