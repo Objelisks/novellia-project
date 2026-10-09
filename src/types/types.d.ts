@@ -1,14 +1,15 @@
 export interface Pet {
-    id: number
-    name: string
-    birthdate: Date
-    gender: string
+  id: number
+  name: string
+  birthdate: Date
+  gender: string
+  imageUrl: string
 }
 
 export interface Record {
-    id: number
-    petId: number
-    filename: string
-    data: string
-    url: string
+  id: number
+  petId: number
+  filename: string
+  data: string
+  url: string
 }

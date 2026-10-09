@@ -1,23 +1,28 @@
-import { useEffect, useState } from "react"
-import type { Pet } from './types/types.d.ts'
+import { BrowserRouter, Route, Routes } from 'react-router'
+import './App.css'
+import PetsPage from './Pets.tsx'
+import PetPage from './Pet.tsx'
+
+/*
+todo:
+- record upload
+- pet create
+- bonus feature
+-  draw pet
+-  private equity
+-  
+
+*/
 
 function App() {
-  const [pets, setPets] = useState<Pet[]>([])
-
-  useEffect(() => {
-    fetch('http://localhost:3000/pets')
-      .then(res => res.json())
-      .then((pets) => {
-        setPets(pets)
-      })
-
-  }, [])
-
   return (
     <main>
-      {pets.map(pet => {
-        return <div key={pet.id}>{pet.name}</div>
-      })}
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<PetsPage />} />
+          <Route path="/pets/:petId" element={<PetPage />} />
+        </Routes>
+      </BrowserRouter>
     </main>
   )
 }
