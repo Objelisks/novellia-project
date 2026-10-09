@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { Pet } from './types/types.d.ts'
 import debounce from 'debounce'
+import type { Pet as PetType } from './types/types'
+import { Pet } from './components/Pet'
 import './App.css'
 
 function PetsPage() {
-  const [pets, setPets] = useState<Pet[]>([])
+  const [pets, setPets] = useState<PetType[]>([])
   const dialogRef = useRef(null)
 
   const searchPets = useCallback(
@@ -34,7 +35,7 @@ function PetsPage() {
 
   const handleAddSubmit = useCallback(
     async (formData: FormData) => {
-      const response: Pet = await fetch(`http://localhost:3000/pets`, {
+      const response: PetType = await fetch(`http://localhost:3000/pets`, {
         method: 'post',
         body: JSON.stringify({
           name: formData.get('name'),
@@ -54,7 +55,7 @@ function PetsPage() {
   )
 
   const handleRemovePet = useCallback(
-    async (pet: Pet) => {
+    async (pet: PetType) => {
       await fetch(`http://localhost:3000/pets/${pet.id}`, {
         method: 'delete',
       })
@@ -93,20 +94,7 @@ function PetsPage() {
         </form>
       </dialog>
       {pets.map((pet) => {
-        return (
-          <div key={pet.id} className="pet">
-            {pet.imageUrl && <img src={pet.imageUrl}></img>}
-            <div className="infobox">
-              <h2>{pet.name}</h2>
-            </div>
-            <a href={`/pets/${pet.id}`}>
-              <button className="button">view</button>
-            </a>
-            <button className="button" onClick={() => handleRemovePet(pet)}>
-              remove
-            </button>
-          </div>
-        )
+        return <Pet key={pet.id} pet={pet} handleRemovePet={handleRemovePet} />
       })}
     </main>
   )

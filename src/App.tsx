@@ -1,14 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
 import './App.css'
-import PetsPage from './Pets.tsx'
-import PetPage from './Pet.tsx'
-
-/*
-todo:
-- bonus feature
--  draw pet
--  private equity
-*/
+import PetsPage from './PetsPage.tsx'
+import PetPage from './PetPage.tsx'
 
 function App() {
   return (

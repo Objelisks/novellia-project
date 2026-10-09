@@ -64,3 +64,5 @@ thurs
 7:31 start
 8:56 code complete minus bonus feature
 9:39 done done
+
+total: 5:20
