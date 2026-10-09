@@ -13,6 +13,7 @@ header {
   flex-direction: row;
   background-color: #444;
   gap: 1rem;
+  padding: 0.5rem;
 }
 
 .infobox {
@@ -29,4 +30,24 @@ input[type='search'] {
 .record {
   border: 2px solid #456;
   margin: 0.5rem;
+
+  header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+}
+
+button {
+  display: inline;
+  max-height: 2rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  input {
+    display: block;
+  }
 }

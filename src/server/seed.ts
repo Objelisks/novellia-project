@@ -22,15 +22,8 @@ const names = [
   'Penny',
   'Nova',
 ]
-const genders = [
-  'the wind',
-  'male',
-  'female',
-  'nonbinary',
-  'a rock',
-  'a tree',
-  'purple',
-]
+const genders = ['male', 'female', 'nonbinary', 'purple', 'other']
+const species = ['cat', 'dog']
 const pick = <T>(arr: T[]) => arr.at(Math.floor(Math.random() * arr.length))
 
 export const createSeedData = async () => {
@@ -40,7 +33,8 @@ export const createSeedData = async () => {
       name: pick(names),
       birthdate: new Date('03-05-1991'),
       gender: pick(genders),
-      imageUrl: 'https://placekittens.com/100/150',
+      species: pick(species),
+      imageUrl: '/image.png',
     })
   }
   const allPets = await Pet.bulkCreate(pets)

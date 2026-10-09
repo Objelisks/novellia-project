@@ -33,6 +33,7 @@ petsRouter.get('/pets/:id/records', async (req, res) => {
 })
 
 petsRouter.post('/pets', async (req, res) => {
+  console.log('create', req.body)
   const pet = await Pet.create(req.body, { fields: Pet.safeFields })
   res.send(JSON.stringify(pet))
 })

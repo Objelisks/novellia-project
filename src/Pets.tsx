@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Pet } from './types/types.d.ts'
 import debounce from 'debounce'
 import './App.css'
 
 function PetsPage() {
   const [pets, setPets] = useState<Pet[]>([])
+  const dialogRef = useRef(null)
 
   const searchPets = useCallback(
     debounce((searchTerm?: string) => {
@@ -27,23 +28,84 @@ function PetsPage() {
     searchPets(searchTerm)
   }, [])
 
+  const handleAddPet = useCallback(() => {
+    dialogRef.current.showModal()
+  }, [])
+
+  const handleAddSubmit = useCallback(
+    async (formData: FormData) => {
+      const response: Pet = await fetch(`http://localhost:3000/pets`, {
+        method: 'post',
+        body: JSON.stringify({
+          name: formData.get('name'),
+          birthdate: formData.get('birthdate'),
+          gender: formData.get('gender'),
+          imageUrl: formData.get('imageUrl')['name'],
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then((res) => res.json())
+
+      setPets([...pets, response])
+      dialogRef.current?.close()
+    },
+    [pets]
+  )
+
+  const handleRemovePet = useCallback(
+    async (pet: Pet) => {
+      await fetch(`http://localhost:3000/pets/${pet.id}`, {
+        method: 'delete',
+      })
+      const newPets = [...pets]
+      newPets.splice(newPets.indexOf(pet), 1)
+      setPets(newPets)
+    },
+    [pets]
+  )
+
   return (
     <main>
       <header>
+        <h1>Pet List</h1>
         <input
           type="search"
           placeholder="search for pet name"
           onChange={handleSearchChange}
         ></input>
+        <button className="button" onClick={handleAddPet}>
+          add pet
+        </button>
       </header>
+      <dialog ref={dialogRef} closedby="any">
+        <h2>Add a pet</h2>
+        <form className="form" action={handleAddSubmit}>
+          <label htmlFor="name">name</label>
+          <input type="text" name="name" id="name" required />
+          <label htmlFor="birthdate">birthdate</label>
+          <input type="date" name="birthdate" id="birthdate" required />
+          <label htmlFor="gender">gender</label>
+          <input type="text" name="gender" id="gender" />
+          <label htmlFor="imageUrl">picture</label>
+          <input type="file" name="imageUrl" id="imageUrl" />
+          <input type="submit" />
+        </form>
+      </dialog>
       {pets.map((pet) => {
         return (
-          <a key={pet.id} className="pet" href={`/pets/${pet.id}`}>
-            <img src={pet.imageUrl}></img>
+          <div key={pet.id} className="pet">
+            {pet.imageUrl && <img src={pet.imageUrl}></img>}
             <div className="infobox">
               <h2>{pet.name}</h2>
             </div>
-          </a>
+            <a href={`/pets/${pet.id}`}>
+              <button className="button">view</button>
+            </a>
+            <button className="button" onClick={() => handleRemovePet(pet)}>
+              remove
+            </button>
+          </div>
         )
       })}
     </main>

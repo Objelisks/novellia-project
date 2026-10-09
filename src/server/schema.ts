@@ -4,11 +4,12 @@ import { sql } from './db.ts'
 import type { Pet as PetType, Record as RecordType } from '../types/types.d.ts'
 
 export class Pet extends Model implements PetType {
-  static safeFields = ['name', 'birthdate', 'gender']
+  static safeFields = ['name', 'birthdate', 'gender', 'species', 'imageUrl']
   declare id: number
   declare name: string
   declare birthdate: Date
   declare gender: string
+  declare species: string
   declare imageUrl: string
 }
 Pet.init(
@@ -25,6 +26,7 @@ Pet.init(
     },
     birthdate: DataTypes.DATE,
     gender: DataTypes.STRING,
+    species: DataTypes.STRING,
     imageUrl: DataTypes.STRING,
   },
   {
@@ -34,7 +36,7 @@ Pet.init(
 )
 
 export class Record extends Model implements RecordType {
-  static safeFields = ['filename', 'data', 'url']
+  static safeFields = ['filename', 'data', 'url', 'petId']
   declare id: number
   declare petId: number
   declare filename: string

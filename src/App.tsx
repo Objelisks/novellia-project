@@ -16,14 +16,12 @@ todo:
 
 function App() {
   return (
-    <main>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<PetsPage />} />
-          <Route path="/pets/:petId" element={<PetPage />} />
-        </Routes>
-      </BrowserRouter>
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<PetsPage />} />
+        <Route path="/pets/:petId" element={<PetPage />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
