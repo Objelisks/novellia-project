@@ -5,13 +5,9 @@ import PetPage from './Pet.tsx'
 
 /*
 todo:
-- record upload
-- pet create
 - bonus feature
 -  draw pet
 -  private equity
--  
-
 */
 
 function App() {

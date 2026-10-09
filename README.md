@@ -62,3 +62,4 @@ thurs
 4:39pm start
 6:00 pause
 7:31 start
+8:56 code complete minus bonus feature

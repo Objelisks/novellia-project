@@ -3,12 +3,68 @@ import type { Pet, Record } from './types/types.d.ts'
 import debounce from 'debounce'
 import './App.css'
 import { useParams } from 'react-router'
+import * as Plot from '@observablehq/plot'
+
+interface DataPoint {
+  Date: Date
+  Weight: number
+  Symptoms?: string
+}
 
 function PetPage() {
   let { petId } = useParams()
   const [pet, setPet] = useState<Pet>(null)
   const [records, setRecords] = useState<Record[]>([])
   const dialogRef = useRef(null)
+  const dataDialogRef = useRef(null)
+  const trackerRef = useRef(null)
+  const [data, setData] = useState<DataPoint[]>([
+    { Date: new Date('2026-05-13'), Weight: 10 },
+    { Date: new Date('2026-05-23'), Weight: 20 },
+    { Date: new Date('2026-06-05'), Weight: 15, Symptoms: 'vom' },
+  ])
+
+  useEffect(() => {
+    if (data === undefined || !trackerRef.current) return
+    const plot = Plot.plot({
+      height: 200,
+      x: { grid: true },
+      y: { grid: true },
+      marks: [
+        Plot.line(data, { x: 'Date', y: 'Weight' }),
+        Plot.dot(data, { x: 'Date', y: 'Weight' }),
+        Plot.tip(data, {
+          x: 'Date',
+          y: 'Weight',
+          title: 'Symptoms',
+          anchor: 'top',
+        }),
+      ],
+    })
+    trackerRef.current.append(plot)
+    return () => plot.remove()
+  }, [data, trackerRef.current])
+
+  const handleAddDataPoint = useCallback(() => {
+    dataDialogRef.current.showModal()
+  }, [])
+
+  const handleAddDataSubmit = useCallback(
+    async (formData: FormData) => {
+      setData((data) => [
+        ...data,
+        {
+          Date: new Date(formData.get('date').toString()),
+          Weight: parseInt(formData.get('weight').toString()),
+          ...(formData.get('symptoms') && {
+            Symptoms: formData.get('symptoms').toString(),
+          }),
+        },
+      ])
+      dataDialogRef.current?.close()
+    },
+    [data]
+  )
 
   const fetchData = useCallback(async () => {
     const pet = await fetch(`http://localhost:3000/pets/${petId}`).then((res) =>
@@ -21,7 +77,7 @@ function PetPage() {
     debounce((searchTerm?: string) => {
       console.log('search', searchTerm)
       fetch(
-        `http://localhost:3000/pets/${petId}/records${searchTerm ? `?q=${searchTerm}` : ''}`
+        `http://localhost:3000/records?id=${petId}${searchTerm ? `&q=${searchTerm}` : ''}`
       )
         .then((res) => res.json())
         .then((pets) => {
@@ -112,6 +168,21 @@ function PetPage() {
               <p>{`${records.length} records`}</p>
             </div>
           </div>
+          <section ref={trackerRef} className="tracker">
+            <dialog ref={dataDialogRef} closedby="any">
+              <h2>Add a data point</h2>
+              <form className="form" action={handleAddDataSubmit}>
+                <label htmlFor="data-date">day</label>
+                <input type="date" name="date" id="data-date" required />
+                <label htmlFor="data-weight">weight</label>
+                <input type="text" name="weight" id="data-weight" required />
+                <label htmlFor="data-symptoms">symptoms</label>
+                <input type="text" name="symptoms" id="data-symptoms" />
+                <input type="submit" />
+              </form>
+            </dialog>
+            <button onClick={handleAddDataPoint}>add data</button>
+          </section>
           <section className="records">
             {records.map((record) => {
               return (
