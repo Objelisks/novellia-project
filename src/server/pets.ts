@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { Pet, Record } from './schema.ts'
+import { Pet } from './schema.ts'
 import { Op } from 'sequelize'
 
 const petsRouter = Router()
@@ -18,18 +18,6 @@ petsRouter.get('/pets/:id', async (req, res) => {
     where: { id },
   })
   res.send(JSON.stringify(pets))
-})
-
-petsRouter.get('/pets/:id/records', async (req, res) => {
-  const id = req.params['id']
-  const searchQuery = req.query['q']
-  const records = await Record.findAll({
-    where: {
-      petId: id,
-      ...(searchQuery && { filename: { [Op.like]: `%${searchQuery}%` } }),
-    },
-  })
-  res.send(JSON.stringify(records))
 })
 
 petsRouter.post('/pets', async (req, res) => {
